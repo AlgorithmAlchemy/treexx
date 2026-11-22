@@ -233,3 +233,8 @@ Containerfile*
 
 # Stakpak session files
 .stakpak/session*
+/.stakpak/
+/_sokrates/
+.cursorignore
+.cursorrules
+

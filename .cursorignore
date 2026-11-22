@@ -192,3 +192,6 @@ client_desktop/
 /.cache/
 /.vscode/
 /node_modules/
+
+/.stakpak/
+/_sokrates/

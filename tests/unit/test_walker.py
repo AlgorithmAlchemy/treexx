@@ -10,7 +10,7 @@ from treexx.core.traversal.models import EntryType
 from treexx.core.traversal.walker import FileWalker
 
 
-def test_walk_returns_files_and_directories_in_sorted_order(
+def test_walk_returns_directories_before_files(
     tmp_path: Path,
 ) -> None:
     (tmp_path / "b.txt").write_text("B", encoding="utf-8")
@@ -33,10 +33,54 @@ def test_walk_returns_files_and_directories_in_sorted_order(
     ]
 
     assert relative_paths == [
-        "a.txt",
-        "b.txt",
         "nested",
         "nested/c.txt",
+        "a.txt",
+        "b.txt",
+    ]
+
+
+def test_walk_sorts_directories_and_files_case_insensitively(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "zeta").mkdir()
+    (tmp_path / "Alpha").mkdir()
+
+    (tmp_path / "z.txt").write_text("Z", encoding="utf-8")
+    (tmp_path / "A.txt").write_text("A", encoding="utf-8")
+
+    nested = tmp_path / "Alpha" / "nested"
+    nested.mkdir()
+
+    (tmp_path / "Alpha" / "b.txt").write_text(
+        "B",
+        encoding="utf-8",
+    )
+    (tmp_path / "Alpha" / "a.txt").write_text(
+        "A",
+        encoding="utf-8",
+    )
+
+    entries = list(
+        FileWalker(
+            root=tmp_path,
+            respect_gitignore=False,
+        ).walk()
+    )
+
+    relative_paths = [
+        entry.relative_path.as_posix()
+        for entry in entries
+    ]
+
+    assert relative_paths == [
+        "Alpha",
+        "Alpha/nested",
+        "Alpha/a.txt",
+        "Alpha/b.txt",
+        "zeta",
+        "A.txt",
+        "z.txt",
     ]
 
 

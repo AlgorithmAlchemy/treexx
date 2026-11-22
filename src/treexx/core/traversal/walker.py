@@ -32,31 +32,40 @@ class FileWalker:
     def _walk(self, directory: Path) -> Iterator[FileEntry]:
         try:
             with os.scandir(directory) as entries:
-                sorted_entries = sorted(
-                    entries,
-                    key=lambda entry: (
-                        entry.name.casefold(),
-                        entry.name,
-                    ),
-                )
+                scanned_entries = []
+
+                for entry in entries:
+                    try:
+                        is_symlink = entry.is_symlink()
+                        is_dir = (
+                            False
+                            if is_symlink
+                            else entry.is_dir(
+                                follow_symlinks=False,
+                            )
+                        )
+                    except OSError:
+                        continue
+
+                    scanned_entries.append(
+                        (entry, is_symlink, is_dir)
+                    )
+
         except OSError:
             return
 
-        for entry in sorted_entries:
+        sorted_entries = sorted(
+            scanned_entries,
+            key=lambda item: (
+                not item[2],
+                item[0].name.casefold(),
+                item[0].name,
+            ),
+        )
+
+        for entry, is_symlink, is_dir in sorted_entries:
             path = Path(entry.path)
             relative_path = path.relative_to(self.root)
-
-            try:
-                is_symlink = entry.is_symlink()
-
-                if is_symlink:
-                    is_dir = False
-                else:
-                    is_dir = entry.is_dir(
-                        follow_symlinks=False,
-                    )
-            except OSError:
-                continue
 
             if not self.filter_engine.should_include(
                 path,

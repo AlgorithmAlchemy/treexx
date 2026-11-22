@@ -1,41 +1,89 @@
-# path/to/src/treexx/core/traversal/walker.py
+
+# src/treexx/core/traversal/walker.py
 
 import os
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Callable, Optional
+
+from treexx.core.filtering.engine import FilterEngine
+from treexx.core.traversal.models import EntryType, FileEntry
 
 
 class FileWalker:
     def __init__(
         self,
-        root: str,
-        filter_fn: Optional[Callable[[Path], bool]] = None,
-    ):
-        self.root = Path(root)
-        self.filter_fn = filter_fn or (lambda _: True)
+        root: Path,
+        respect_gitignore: bool = True,
+        show_hidden: bool = False,
+    ) -> None:
+        self.root = Path(os.path.abspath(root))
+        self.filter_engine = FilterEngine(
+            root=self.root,
+            respect_gitignore=respect_gitignore,
+            show_hidden=show_hidden,
+        )
 
-    def walk(self) -> Iterator[Path]:
+    def walk(self) -> Iterator[FileEntry]:
+        if not self.root.is_dir():
+            return
+
         yield from self._walk(self.root)
 
-    def _walk(self, path: Path) -> Iterator[Path]:
+    def _walk(self, directory: Path) -> Iterator[FileEntry]:
         try:
-            with os.scandir(path) as it:
-                entries = sorted(it, key=lambda e: e.name)
-
-                for entry in entries:
-                    entry_path = Path(entry.path)
-
-                    is_dir = entry.is_dir(follow_symlinks=False)
-
-                    # IMPORTANT: allow filtering directories too
-                    if not self.filter_fn(entry_path):
-                        continue
-
-                    if is_dir:
-                        yield from self._walk(entry_path)
-                    else:
-                        yield entry_path
-
-        except (PermissionError, FileNotFoundError):
+            with os.scandir(directory) as entries:
+                sorted_entries = sorted(
+                    entries,
+                    key=lambda entry: (
+                        entry.name.casefold(),
+                        entry.name,
+                    ),
+                )
+        except OSError:
             return
+
+        for entry in sorted_entries:
+            path = Path(entry.path)
+            relative_path = path.relative_to(self.root)
+
+            try:
+                is_symlink = entry.is_symlink()
+
+                if is_symlink:
+                    is_dir = False
+                else:
+                    is_dir = entry.is_dir(
+                        follow_symlinks=False,
+                    )
+            except OSError:
+                continue
+
+            if not self.filter_engine.should_include(
+                path,
+                is_dir=is_dir,
+            ):
+                continue
+
+            if is_symlink:
+                yield FileEntry(
+                    path=path,
+                    relative_path=relative_path,
+                    kind=EntryType.SYMLINK,
+                )
+                continue
+
+            if is_dir:
+                yield FileEntry(
+                    path=path,
+                    relative_path=relative_path,
+                    kind=EntryType.DIRECTORY,
+                )
+
+                yield from self._walk(path)
+                continue
+
+            yield FileEntry(
+                path=path,
+                relative_path=relative_path,
+                kind=EntryType.FILE,
+            )

@@ -1,0 +1,94 @@
+
+# pyproject.toml
+
+[tool.poetry]
+name = "treexx"
+version = "0.1.0"
+description = "Fast and extensible filesystem traversal toolkit"
+authors = ["AlgorithmAlchemy"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "treexx", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.13"
+pathspec = "^0.12.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+black = "*"
+ruff = "*"
+mypy = "*"
+pre-commit = "*"
+bandit = "*"
+safety = "*"
+pylint = "*"
+flake8 = "*"
+ty = "*"
+gitlint = "*"
+
+[tool.poetry.scripts]
+treex = "treexx.cli.main:main"
+trex = "treexx.cli.main:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 79
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "UP",
+    "B",
+    "SIM",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.black]
+line-length = 79
+target-version = ["py313"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+mypy_path = "src"
+
+[tool.pylint.main]
+py-version = "3.13"
+source-roots = ["src"]
+
+[tool.pylint.format]
+max-line-length = 79
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv", ".git"]
+
+[tool.coverage.run]
+branch = true
+source = ["treexx"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 0

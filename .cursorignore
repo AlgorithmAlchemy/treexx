@@ -1,0 +1,194 @@
+# =============================================================================
+# Reusable .cursorignore template (open-source style baseline)
+#
+# Generic Cursor Agent / indexing exclude list. Copy into any repo.
+# Keep SHARED BASELINE as-is; put project-specific rules under PROJECT OVERRIDES.
+# Prefer ignoring secrets and generated artifacts, not source you need to edit.
+#
+# Companions (same convention):
+#   .gitignore     — Git untracked paths
+#   .dockerignore  — Docker build-context excludes
+#
+# Syntax follows .gitignore rules (globs, ! negations, comments).
+# =============================================================================
+
+# =============================================================================
+# SHARED BASELINE
+# =============================================================================
+# -------------------------
+# Python bytecode & cache
+# -------------------------
+__pycache__/
+__pycache__
+*/__pycache__/
+__pycache__/**/
+**/__pycache__/
+
+# Common typo/mistake variants
+pycache/
+PyCache/
+pycahce/
+PYCACHE/
+.PYCACHE/
+.cache/
+.cache/**/
+
+# -------------------------
+# C extensions / builds
+# -------------------------
+*.so
+*.dll
+*.dylib
+*.o
+*.a
+
+# -------------------------
+# Virtualenvs / Python environments
+# -------------------------
+
+.venv
+
+venv/
+
+venv.bak/
+.venv.bak/
+python_env/
+venv_env/
+
+# -------------------------
+# Packaging
+# -------------------------
+.Python
+build/
+dist/
+sdist/
+wheels/
+downloads/
+.eggs/
+*.egg
+*.egg-info/
+.installed.cfg
+MANIFEST
+
+# -------------------------
+# Logs & Installer files
+# -------------------------
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# -------------------------
+# PyInstaller
+# -------------------------
+*.spec
+*.manifest
+
+# -------------------------
+# Unit test / Coverage
+# -------------------------
+.tox/
+.nox/
+.pytest_cache/
+.coverage
+.coverage.*
+*.cover
+*.py,cover
+nosetests.xml
+coverage.xml
+htmlcov/
+.hypothesis/
+.coverage_cache/
+
+# -------------------------
+# Type checkers
+# -------------------------
+.mypy_cache/
+.dmypy.json
+.pytype/
+.pyre/
+.ruff_cache/
+
+# -------------------------
+# Jupyter / IPython
+# -------------------------
+.ipynb_checkpoints
+
+# -------------------------
+# Documentation
+# -------------------------
+docs/_build/
+site/
+
+# -------------------------
+# IDEs
+# -------------------------
+.idea/
+.vscode/
+.spyderproject
+.spyproject
+.ropeproject
+
+# -------------------------
+# Build tools / dependency managers
+# -------------------------
+.pybuilder/
+target/
+python-build/
+.pdm-build/
+.pdm-python
+.pdm.toml
+
+# -------------------------
+# pyenv
+# -------------------------
+.python-version
+
+# -------------------------
+# PEP 582
+# -------------------------
+__pypackages__/
+
+# -------------------------
+# Frameworks
+# -------------------------
+# Django
+local_settings.py
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# -------------------------
+# PyPI / Private config
+# -------------------------
+.pypirc
+
+# -------------------------
+# OS / editor junk
+# -------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*~
+*.bak
+
+# =============================================================================
+# PROJECT OVERRIDES
+# Add repository-specific Cursor excludes below this line only.
+# =============================================================================
+client_desktop/
+/.cache/
+/.vscode/
+/node_modules/

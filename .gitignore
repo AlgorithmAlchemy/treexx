@@ -230,3 +230,6 @@ Containerfile*
 # -------------------------
 # Example custom ignored file
 # -------------------------
+
+# Stakpak session files
+.stakpak/session*
